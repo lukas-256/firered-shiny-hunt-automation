@@ -23,9 +23,11 @@ class MatchConfig:
 
 @dataclass(frozen=True)
 class RuntimeConfig:
-    check_interval_seconds: float = 0.5
+    check_interval_seconds: float = 1.0
     log_similarity: bool = True
     max_loops: Optional[int] = None
+    startup_press_a_seconds: float = 5.0
+    startup_press_a_interval_seconds: float = 0.4
 
 
 @dataclass(frozen=True)

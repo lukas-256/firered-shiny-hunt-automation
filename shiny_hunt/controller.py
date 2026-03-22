@@ -233,6 +233,11 @@ class ProMicroController:
 
     def run_action(self, action_name: str) -> None:
         action_map = {
+            "press_a": self.press_a,
+            "press_b": self.press_b,
+            "press_x": self.press_x,
+            "press_y": self.press_y,
+            "press_abxy": self.press_abxy,
             "press_a_to_continue": self.press_a_to_continue,
             "wait_or_press_a": self.wait_or_press_a,
             "soft_reset_sequence": self.soft_reset_sequence,
@@ -264,6 +269,21 @@ class ProMicroController:
 
     def wait_or_press_a(self) -> None:
         self.tap("A")
+
+    def press_a(self) -> None:
+        self.tap("A")
+
+    def press_b(self) -> None:
+        self.tap("B")
+
+    def press_x(self) -> None:
+        self.tap("X")
+
+    def press_y(self) -> None:
+        self.tap("Y")
+
+    def press_abxy(self) -> None:
+        self.tap_buttons(("A", "B", "X", "Y"), hold_seconds=0.12)
 
     def soft_reset_sequence(self) -> None:
         for button in ("HOME", "X", "A"):

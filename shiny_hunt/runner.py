@@ -8,6 +8,9 @@ from .controller import ProMicroController
 from .matching import ImageMatcher
 from .states import build_default_states
 
+RESET_COLOR = "\033[1;93m"
+RESET_COLOR_END = "\033[0m"
+
 
 def run_hunt_loop(config: AppConfig) -> None:
     states = build_default_states(config.project_root)
@@ -32,13 +35,30 @@ def run_hunt_loop(config: AppConfig) -> None:
     controller.connect()
     grabber.open()
 
+    if config.runtime.startup_press_a_seconds > 0:
+        print(f"[startup] pressing A for {config.runtime.startup_press_a_seconds:.1f}s before detection")
+        startup_deadline = time.time() + config.runtime.startup_press_a_seconds
+        startup_presses = 0
+        while time.time() < startup_deadline:
+            controller.press_a()
+            startup_presses += 1
+            remaining = max(0.0, startup_deadline - time.time())
+            print(f"[startup] A press {startup_presses} (remaining {remaining:.1f}s)")
+            if time.time() < startup_deadline:
+                time.sleep(config.runtime.startup_press_a_interval_seconds)
+
     loop_count = 0
+    reset_count = 0
 
     try:
         while True:
+            loop_count += 1
+
             frame = grabber.read()
             if frame is None:
                 print("[loop] no frame")
+                if config.runtime.max_loops is not None and loop_count >= config.runtime.max_loops:
+                    break
                 time.sleep(config.runtime.check_interval_seconds)
                 continue
 
@@ -76,9 +96,11 @@ def run_hunt_loop(config: AppConfig) -> None:
             if best_state.screenshot_path is not None and best_similarity >= config.match.similarity_threshold:
                 if best_state.match_text:
                     print(f"[match] {best_state.match_text}")
+                if best_state.action_name == "press_abxy":
+                    reset_count += 1
+                    print(f"{RESET_COLOR}[resets] {reset_count}{RESET_COLOR_END}")
                 controller.run_action(best_state.action_name)
 
-            loop_count += 1
             if config.runtime.max_loops is not None and loop_count >= config.runtime.max_loops:
                 break
 
