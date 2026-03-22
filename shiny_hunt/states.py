@@ -55,7 +55,7 @@ def build_default_states(project_root: Path) -> list[ScreenState]:
             name="start charmander pickup sequence",
             screenshot_path=images_dir / "pickup_charmander.png",
             action_name="press_a",
-            match_x=0,
+            match_x=200,
             match_y=0,
             match_text="Started pickup charmander sequence",
         ),
