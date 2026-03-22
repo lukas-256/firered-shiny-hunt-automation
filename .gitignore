@@ -1,0 +1,6 @@
+__pycache__/
+lufa/
+switch-automation-tools/
+SwitchInputEmulator/
+venv/
+.DS_Store
