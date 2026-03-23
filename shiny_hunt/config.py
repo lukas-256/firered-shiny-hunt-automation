@@ -28,6 +28,8 @@ class RuntimeConfig:
     max_loops: Optional[int] = None
     startup_press_a_seconds: float = 5.0
     startup_press_a_interval_seconds: float = 0.4
+    shiny_no_match_streak_threshold: int = 20
+    ntfy_topic: str = "shiny_hunt_noti_ignotus"
 
 
 @dataclass(frozen=True)

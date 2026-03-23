@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import time
+from urllib.parse import quote
+from urllib.request import Request, urlopen
 
 from .capture import FrameGrabber
 from .config import AppConfig
@@ -10,6 +12,20 @@ from .states import build_default_states
 
 RESET_COLOR = "\033[1;93m"
 RESET_COLOR_END = "\033[0m"
+
+
+def send_ntfy_notification(topic: str, message: str) -> None:
+    if not topic:
+        return
+    url = f"https://ntfy.sh/{quote(topic)}"
+    request = Request(
+        url=url,
+        data=message.encode("utf-8"),
+        method="POST",
+        headers={"Title": "Shiny Hunt", "Priority": "urgent", "Tags": "star"},
+    )
+    with urlopen(request, timeout=10):
+        pass
 
 
 def run_hunt_loop(config: AppConfig) -> None:
@@ -49,6 +65,7 @@ def run_hunt_loop(config: AppConfig) -> None:
 
     loop_count = 0
     reset_count = 0
+    no_match_streak = 0
 
     try:
         while True:
@@ -93,13 +110,26 @@ def run_hunt_loop(config: AppConfig) -> None:
             if config.runtime.log_similarity:
                 print(f"[detect] {best_state.name} similarity={best_similarity:.5f}")
 
-            if best_state.screenshot_path is not None and best_similarity >= config.match.similarity_threshold:
+            is_match = best_state.screenshot_path is not None and best_similarity >= config.match.similarity_threshold
+            if is_match:
+                no_match_streak = 0
                 if best_state.match_text:
                     print(f"[match] {best_state.match_text}")
                 if best_state.action_name == "press_abxy":
                     reset_count += 1
                     print(f"{RESET_COLOR}[resets] {reset_count}{RESET_COLOR_END}")
                 controller.run_action(best_state.action_name)
+            else:
+                no_match_streak += 1
+                print(f"[no-match] streak {no_match_streak}/{config.runtime.shiny_no_match_streak_threshold}")
+                if no_match_streak >= config.runtime.shiny_no_match_streak_threshold:
+                    print("[shiny] no state matched for threshold streak; sending notification and exiting")
+                    try:
+                        send_ntfy_notification(config.runtime.ntfy_topic, "Shiny Found!")
+                        print(f"[ntfy] notification sent to topic '{config.runtime.ntfy_topic}'")
+                    except Exception as exc:
+                        print(f"[ntfy] failed to send notification: {exc}")
+                    break
 
             if config.runtime.max_loops is not None and loop_count >= config.runtime.max_loops:
                 break
