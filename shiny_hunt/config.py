@@ -30,6 +30,8 @@ class RuntimeConfig:
     startup_press_a_interval_seconds: float = 0.4
     shiny_no_match_streak_threshold: int = 20
     ntfy_topic: str = "shiny_hunt_noti_ignotus"
+    reset_counter_initial: int = 1502
+    success_probability_per_try: float = 1.0 / 8192.0
 
 
 @dataclass(frozen=True)

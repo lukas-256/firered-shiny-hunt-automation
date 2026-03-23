@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import time
 from urllib.parse import quote
 from urllib.request import Request, urlopen
@@ -12,6 +13,8 @@ from .states import build_default_states
 
 RESET_COLOR = "\033[1;93m"
 RESET_COLOR_END = "\033[0m"
+ODDS_COLOR = "\033[1;96m"
+ODDS_COLOR_END = "\033[0m"
 
 
 def send_ntfy_notification(topic: str, message: str) -> None:
@@ -64,7 +67,7 @@ def run_hunt_loop(config: AppConfig) -> None:
                 time.sleep(config.runtime.startup_press_a_interval_seconds)
 
     loop_count = 0
-    reset_count = 0
+    reset_count = max(0, config.runtime.reset_counter_initial)
     no_match_streak = 0
 
     try:
@@ -118,6 +121,12 @@ def run_hunt_loop(config: AppConfig) -> None:
                 if best_state.action_name == "press_abxy":
                     reset_count += 1
                     print(f"{RESET_COLOR}[resets] {reset_count}{RESET_COLOR_END}")
+                    p = min(max(config.runtime.success_probability_per_try, 0.0), 1.0)
+                    success_probability = 1.0 - math.pow(1.0 - p, reset_count)
+                    print(
+                        f"{ODDS_COLOR}[odds] P(at least one success) = 1-(1-{p:.8f})^{reset_count} = "
+                        f"{success_probability * 100.0:.4f}%{ODDS_COLOR_END}"
+                    )
                 controller.run_action(best_state.action_name)
             else:
                 no_match_streak += 1
