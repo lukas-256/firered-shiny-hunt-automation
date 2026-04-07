@@ -15,6 +15,7 @@ RESET_COLOR = "\033[1;93m"
 RESET_COLOR_END = "\033[0m"
 ODDS_COLOR = "\033[1;96m"
 ODDS_COLOR_END = "\033[0m"
+COUNTED_RESET_ACTIONS = {"press_abxy", "start_run_sequence"}
 
 
 def send_ntfy_notification(topic: str, message: str) -> None:
@@ -121,7 +122,7 @@ def run_hunt_loop(config: AppConfig) -> None:
                 no_match_streak = 0
                 if best_state.match_text:
                     print(f"[match] {best_state.match_text}")
-                if best_state.action_name == "press_abxy":
+                if best_state.action_name in COUNTED_RESET_ACTIONS:
                     now = time.time()
                     reset_count += 1
                     print(f"{RESET_COLOR}[resets] {reset_count}{RESET_COLOR_END}")

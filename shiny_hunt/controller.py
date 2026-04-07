@@ -19,6 +19,9 @@ class ProMicroController:
     RESP_SYNC_OK = 0x33
 
     DPAD_CENTER = 0x08
+    STICK_CENTER = 0x80
+    STICK_MIN = 0x00
+    STICK_MAX = 0xFF
     DPAD_CODES = {
         "UP": 0x00,
         "UP_RIGHT": 0x01,
@@ -46,6 +49,13 @@ class ProMicroController:
         "RCLICK": 0x0800,
         "HOME": 0x1000,
         "CAPTURE": 0x2000,
+    }
+    LEFT_STICK_DIRECTIONS = {
+        "CENTER": (STICK_CENTER, STICK_CENTER),
+        "UP": (STICK_CENTER, STICK_MIN),
+        "DOWN": (STICK_CENTER, STICK_MAX),
+        "LEFT": (STICK_MIN, STICK_CENTER),
+        "RIGHT": (STICK_MAX, STICK_CENTER),
     }
 
     def __init__(
@@ -182,17 +192,25 @@ class ProMicroController:
         if ack != self.RESP_USB_ACK:
             raise RuntimeError("controller did not ACK packet")
 
-    def _send_state(self, button_mask: int, dpad: int) -> None:
+    def _send_state(
+        self,
+        button_mask: int,
+        dpad: int,
+        left_x: int = STICK_CENTER,
+        left_y: int = STICK_CENTER,
+        right_x: int = STICK_CENTER,
+        right_y: int = STICK_CENTER,
+    ) -> None:
         low = button_mask & 0xFF
         high = (button_mask >> 8) & 0xFF
         packet = [
             high,
             low,
             dpad,
-            0x80,
-            0x80,
-            0x80,
-            0x80,
+            left_x,
+            left_y,
+            right_x,
+            right_y,
             0x00,
         ]
         self._send_packet(packet)
@@ -231,6 +249,19 @@ class ProMicroController:
         self.release_all()
         time.sleep(self.release_delay_seconds)
 
+    def tilt_left_stick(self, direction: str, hold_seconds: float = 0.10) -> None:
+        if not self.connected:
+            return
+
+        coords = self.LEFT_STICK_DIRECTIONS.get(direction.upper())
+        if coords is None:
+            raise ValueError(f"Unsupported left stick direction: {direction}")
+
+        self._send_state(0x0000, self.DPAD_CENTER, left_x=coords[0], left_y=coords[1])
+        time.sleep(hold_seconds)
+        self.release_all()
+        time.sleep(self.release_delay_seconds)
+
     def run_action(self, action_name: str) -> None:
         action_map = {
             "press_a": self.press_a,
@@ -238,6 +269,7 @@ class ProMicroController:
             "press_x": self.press_x,
             "press_y": self.press_y,
             "press_abxy": self.press_abxy,
+            "start_run_sequence": self.start_run_sequence,
             "press_a_to_continue": self.press_a_to_continue,
             "wait_or_press_a": self.wait_or_press_a,
             "soft_reset_sequence": self.soft_reset_sequence,
@@ -284,6 +316,12 @@ class ProMicroController:
 
     def press_abxy(self) -> None:
         self.tap_buttons(("A", "B", "X", "Y"), hold_seconds=0.12)
+
+    def start_run_sequence(self) -> None:
+        # Battle menu navigation for Magikarp: right, down, confirm.
+        self.tilt_left_stick("RIGHT", hold_seconds=0.10)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.press_a()
 
     def soft_reset_sequence(self) -> None:
         for button in ("HOME", "X", "A"):

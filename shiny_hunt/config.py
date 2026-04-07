@@ -30,7 +30,7 @@ class RuntimeConfig:
     startup_press_a_interval_seconds: float = 0.4
     shiny_no_match_streak_threshold: int = 40
     ntfy_topic: str = "shiny_hunt_noti_ignotus"
-    reset_counter_initial: int = 10779
+    reset_counter_initial: int = 0
     success_probability_per_try: float = 1.0 / 8192.0
 
 
@@ -47,7 +47,7 @@ class ControllerConfig:
 @dataclass(frozen=True)
 class AppConfig:
     project_root: Path
-    state_profile: str = "charmander"
+    state_profile: str = "magikarp"
     capture: CaptureConfig = CaptureConfig()
     match: MatchConfig = MatchConfig()
     runtime: RuntimeConfig = RuntimeConfig()
