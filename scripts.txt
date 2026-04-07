@@ -1,5 +1,5 @@
 source venv/bin/activate
 python3 -m tools.reference_tools_cli list-devices
-python3 -m tools.reference_tools_cli save-full --out images/switch_frame_game_freak.png
-python3 -m tools.reference_tools_cli save-crop --out images/example.png --x 350 --y 140 --w 50 --h 50
+python3 -m tools.reference_tools_cli save-full --out images/charmander/switch_frame_game_freak.png
+python3 -m tools.reference_tools_cli save-crop --out images/charmander/example.png --x 350 --y 140 --w 50 --h 50
 python3 -m tools.controller_gui

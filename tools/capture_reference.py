@@ -11,7 +11,7 @@ from shiny_hunt.reference_tools import save_full_frame
 
 if __name__ == "__main__":
     cfg = default_app_config()
-    output = Path("images") / "switch_frame_new.png"
+    output = Path("images") / cfg.state_profile / "switch_frame_new.png"
     output.parent.mkdir(parents=True, exist_ok=True)
     saved = save_full_frame(output, cfg.capture)
     print(f"Saved {saved}")

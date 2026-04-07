@@ -30,7 +30,7 @@ python3 run_hunt.py
 - a frame grabber (`shiny_hunt/capture.py`)
 - an image matcher (`shiny_hunt/matching.py`)
 - a serial controller (`shiny_hunt/controller.py`)
-3. It loads reference screenshots from `images/` based on states in `shiny_hunt/states.py`.
+3. It loads the selected state profile from config and then loads reference screenshots from `images/<state_profile>/`.
 4. Each loop:
 - grabs a frame from the capture card
 - compares frame against each state reference
@@ -40,7 +40,8 @@ python3 run_hunt.py
 ### Main config defaults
 
 Defined in `shiny_hunt/config.py`:
-- Capture: device `0`, `1280x720`, `60 fps`
+- State profile: `charmander` or `magikarp`
+- Capture: device `0`, `1920x1080`, `60 fps`
 - Matching: pixel tolerance `1`, similarity threshold `0.99`
 - Runtime: check interval `0.5s`
 - Controller serial: `/dev/cu.usbserial-BG03S8AW`, `19200` baud
@@ -55,8 +56,8 @@ CLI for capture utilities.
 
 ```bash
 python3 -m tools.reference_tools_cli list-devices
-python3 -m tools.reference_tools_cli save-full --out images/switch_frame_game_freak.png
-python3 -m tools.reference_tools_cli save-crop --out images/example.png --x 350 --y 140 --w 50 --h 50
+python3 -m tools.reference_tools_cli save-full --out images/charmander/switch_frame_game_freak.png
+python3 -m tools.reference_tools_cli save-crop --out images/charmander/example.png --x 350 --y 140 --w 50 --h 50
 ```
 
 Commands:
@@ -99,7 +100,7 @@ python3 -m tools.switch_buttons
 ### `tools/capture_reference.py`
 
 Captures one full frame and saves:
-- `images/switch_frame_new.png`
+- `images/<state_profile>/switch_frame_new.png`
 
 Run:
 
@@ -129,7 +130,7 @@ python3 tools/test_id.py
 
 ### `tools/screenshot.py`
 
-Grabs one frame from `DEVICE_INDEX=0`, takes a filename argument, and saves to `images/<filename>`.
+Grabs one frame from `DEVICE_INDEX=0`, takes a filename argument, and saves to `images/<state_profile>/<filename>`.
 
 Run:
 

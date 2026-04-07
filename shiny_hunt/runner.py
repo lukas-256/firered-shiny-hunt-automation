@@ -9,7 +9,7 @@ from .capture import FrameGrabber
 from .config import AppConfig
 from .controller import ProMicroController
 from .matching import ImageMatcher
-from .states import build_default_states
+from .states import build_states
 
 RESET_COLOR = "\033[1;93m"
 RESET_COLOR_END = "\033[0m"
@@ -32,7 +32,9 @@ def send_ntfy_notification(topic: str, message: str) -> None:
 
 
 def run_hunt_loop(config: AppConfig) -> None:
-    states = build_default_states(config.project_root)
+    states = build_states(config.project_root, config.state_profile)
+    if not states:
+        raise RuntimeError(f"No states configured for profile '{config.state_profile}'.")
     matcher = ImageMatcher(config.match)
     controller = ProMicroController(
         port=config.controller.port,

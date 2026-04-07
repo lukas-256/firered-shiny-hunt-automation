@@ -47,6 +47,7 @@ class ControllerConfig:
 @dataclass(frozen=True)
 class AppConfig:
     project_root: Path
+    state_profile: str = "charmander"
     capture: CaptureConfig = CaptureConfig()
     match: MatchConfig = MatchConfig()
     runtime: RuntimeConfig = RuntimeConfig()

@@ -65,6 +65,7 @@ def cmd_save_crop(args: argparse.Namespace) -> int:
 
 
 def parser() -> argparse.ArgumentParser:
+    profile = default_app_config().state_profile
     p = argparse.ArgumentParser(description="Utilities for reference screenshot workflow")
     sub = p.add_subparsers(dest="command", required=True)
 
@@ -72,12 +73,12 @@ def parser() -> argparse.ArgumentParser:
     p_list.set_defaults(func=cmd_list_devices)
 
     p_full = sub.add_parser("save-full", help="Capture full frame to a file")
-    p_full.add_argument("--out", default="images/reference_full.png", help="Output image path")
+    p_full.add_argument("--out", default=f"images/{profile}/reference_full.png", help="Output image path")
     p_full.add_argument("--device", type=int, default=None, help="Capture device index override")
     p_full.set_defaults(func=cmd_save_full)
 
     p_crop = sub.add_parser("save-crop", help="Capture cropped region to a file")
-    p_crop.add_argument("--out", default="images/reference_crop.png", help="Output image path")
+    p_crop.add_argument("--out", default=f"images/{profile}/reference_crop.png", help="Output image path")
     p_crop.add_argument("--x", type=int, required=True, help="Crop start X")
     p_crop.add_argument("--y", type=int, required=True, help="Crop start Y")
     p_crop.add_argument("--w", type=int, required=True, help="Crop width")
