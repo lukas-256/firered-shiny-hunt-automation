@@ -69,6 +69,7 @@ def run_hunt_loop(config: AppConfig) -> None:
     loop_count = 0
     reset_count = max(0, config.runtime.reset_counter_initial)
     no_match_streak = 0
+    last_reset_time: float | None = None
 
     try:
         while True:
@@ -119,6 +120,7 @@ def run_hunt_loop(config: AppConfig) -> None:
                 if best_state.match_text:
                     print(f"[match] {best_state.match_text}")
                 if best_state.action_name == "press_abxy":
+                    now = time.time()
                     reset_count += 1
                     print(f"{RESET_COLOR}[resets] {reset_count}{RESET_COLOR_END}")
                     p = min(max(config.runtime.success_probability_per_try, 0.0), 1.0)
@@ -127,6 +129,12 @@ def run_hunt_loop(config: AppConfig) -> None:
                         f"{ODDS_COLOR}[odds] P(at least one success) = 1-(1-{p:.8f})^{reset_count} = "
                         f"{success_probability * 100.0:.4f}%{ODDS_COLOR_END}"
                     )
+                    if last_reset_time is None:
+                        print("[delta] first reset (no previous delta)")
+                    else:
+                        delta_seconds = now - last_reset_time
+                        print(f"[delta] {delta_seconds:.2f}s since previous reset")
+                    last_reset_time = now
                 controller.run_action(best_state.action_name)
             else:
                 no_match_streak += 1

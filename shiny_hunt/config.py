@@ -23,14 +23,14 @@ class MatchConfig:
 
 @dataclass(frozen=True)
 class RuntimeConfig:
-    check_interval_seconds: float = 1.0
-    log_similarity: bool = True
+    check_interval_seconds: float = 0.5
+    log_similarity: bool = False
     max_loops: Optional[int] = None
     startup_press_a_seconds: float = 5.0
     startup_press_a_interval_seconds: float = 0.4
-    shiny_no_match_streak_threshold: int = 20
+    shiny_no_match_streak_threshold: int = 40
     ntfy_topic: str = "shiny_hunt_noti_ignotus"
-    reset_counter_initial: int = 1502
+    reset_counter_initial: int = 10779
     success_probability_per_try: float = 1.0 / 8192.0
 
 
