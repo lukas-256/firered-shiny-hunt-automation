@@ -26,11 +26,14 @@ class RuntimeConfig:
     check_interval_seconds: float = 0.5
     log_similarity: bool = False
     max_loops: Optional[int] = None
-    startup_press_a_seconds: float = 5.0
+    startup_press_a_seconds: float = 0.6
     startup_press_a_interval_seconds: float = 0.4
     shiny_no_match_streak_threshold: int = 40
+    shiny_no_match_notify_runtime_states: tuple[str, ...] = ("s1",)
+    reset_on_no_match_threshold_outside_notify_states: bool = False
     ntfy_topic: str = "shiny_hunt_noti_ignotus"
     reset_counter_initial: int = 0
+    reset_counter_increment: int = 1
     success_probability_per_try: float = 1.0 / 8192.0
 
 
@@ -47,7 +50,8 @@ class ControllerConfig:
 @dataclass(frozen=True)
 class AppConfig:
     project_root: Path
-    state_profile: str = "magikarp"
+    state_profile: str = "eevee"
+    initial_runtime_state: str = "s0"
     capture: CaptureConfig = CaptureConfig()
     match: MatchConfig = MatchConfig()
     runtime: RuntimeConfig = RuntimeConfig()

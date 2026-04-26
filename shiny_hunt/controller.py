@@ -266,9 +266,13 @@ class ProMicroController:
         action_map = {
             "press_a": self.press_a,
             "press_b": self.press_b,
+            "press_down": self.press_down,
             "press_x": self.press_x,
             "press_y": self.press_y,
             "press_abxy": self.press_abxy,
+            "buy_dratini_sequence": self.buy_dratini_sequence,
+            "open_menu_eevee": self.open_menu_eevee,
+            "open_first_pokemon_status_sequence": self.open_first_pokemon_status_sequence,
             "start_run_sequence": self.start_run_sequence,
             "press_a_to_continue": self.press_a_to_continue,
             "wait_or_press_a": self.wait_or_press_a,
@@ -308,6 +312,9 @@ class ProMicroController:
     def press_b(self) -> None:
         self.tap("B")
 
+    def press_down(self) -> None:
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+
     def press_x(self) -> None:
         self.tap("X")
 
@@ -321,6 +328,39 @@ class ProMicroController:
         # Battle menu navigation for Magikarp: right, down, confirm.
         self.tilt_left_stick("RIGHT", hold_seconds=0.10)
         self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.press_a()
+
+    def buy_dratini_sequence(self) -> None:
+        # Prize menu navigation: down, down, confirm.
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.press_a()
+
+    def open_first_pokemon_status_sequence(self) -> None:
+        # Party/status navigation: open menu, Pokemon, move to first Dratini, open summary.
+        self.press_x()
+        time.sleep(1.0)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.press_a()
+        time.sleep(1.0)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        time.sleep(1.0)
+        self.press_a()
+        time.sleep(1.0)
+        self.press_a()
+    
+    def open_menu_eevee(self) -> None:
+        self.press_x()
+        time.sleep(1.0)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        time.sleep(1.0)
+        self.press_a()
+        time.sleep(1.0)
+        self.tilt_left_stick("DOWN", hold_seconds=0.10)
+        self.press_a()
+        time.sleep(0.2)
         self.press_a()
 
     def soft_reset_sequence(self) -> None:

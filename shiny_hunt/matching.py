@@ -22,20 +22,39 @@ class ImageMatcher:
     def load_reference(self, path: Path) -> np.ndarray | None:
         if not path.exists():
             return None
-        return cv2.imread(str(path))
+        return cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
 
     def compare(self, reference: np.ndarray | None, frame: np.ndarray | None) -> MatchResult:
         if reference is None or frame is None:
             similarity = self._config.missing_image_similarity
             return MatchResult(similarity=similarity, is_match=False)
-        if frame.shape != reference.shape:
+        if frame.shape[:2] != reference.shape[:2]:
             return MatchResult(similarity=0.0, is_match=False)
 
-        diff = cv2.absdiff(reference, frame)
-        gray_diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+        if reference.ndim != 3 or frame.ndim != 3:
+            return MatchResult(similarity=0.0, is_match=False)
 
-        same_pixels = np.sum(gray_diff < self._config.pixel_tolerance)
-        total_pixels = gray_diff.size
+        if reference.shape[2] == 4:
+            alpha = reference[:, :, 3]
+            mask = alpha > 0
+            if not np.any(mask):
+                return MatchResult(similarity=0.0, is_match=False)
+
+            reference_bgr = reference[:, :, :3]
+            diff = cv2.absdiff(reference_bgr, frame)
+            gray_diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+
+            same_pixels = np.sum((gray_diff < self._config.pixel_tolerance) & mask)
+            total_pixels = int(np.sum(mask))
+        elif reference.shape[2] == 3 and frame.shape[2] == 3:
+            diff = cv2.absdiff(reference, frame)
+            gray_diff = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+
+            same_pixels = np.sum(gray_diff < self._config.pixel_tolerance)
+            total_pixels = gray_diff.size
+        else:
+            return MatchResult(similarity=0.0, is_match=False)
+
         similarity = float(same_pixels / total_pixels)
 
         return MatchResult(

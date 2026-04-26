@@ -9,6 +9,8 @@ class ScreenState:
     name: str
     screenshot_path: Path | None
     action_name: str
+    required_runtime_state: str | None = None
+    next_runtime_state: str | None = None
     match_x: int = 0
     match_y: int = 0
     match_text: str | None = None
