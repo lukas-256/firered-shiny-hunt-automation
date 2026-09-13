@@ -4,12 +4,12 @@ This project automates shiny hunting in Pokémon FireRed by reading the game
 video, recognizing screen states from reference images, and sending controller
 inputs back to the console.
 
-The setup documented here was tested with:
+The setup documented here was tested with these exact components:
 
 - Nintendo Switch 2 running Pokémon FireRed
-- Arduino Pro Micro with an ATmega32U4
-- UGREEN HDMI-to-USB capture card
-- USB-to-UART adapter connected to the Pro Micro hardware serial pins
+- [UGREEN 25854/CM716 HDMI-to-USB-C/USB-A capture card](https://www.ugreenindia.com/products/ugreen-full-hd-1080p-video-capture-card-4k-hdmi-to-usb-a-c-hdmi-capture-card-usb-2-0capture-video-audio-recording-compatible-with-switch-ps5-xbox-ipados-macbook-incompatible-with-dvd-player-firestick-25854)
+- [Paradisetronic USB-C Pro Micro, ATmega32U4, 5 V/16 MHz](https://paradisetronic.com/products/pro-micro-modul-mit-usb-c-atmega32u4-5v-16mhz-arduino-kompatibel)
+- [DSD TECH SH-U09C2 USB-to-TTL adapter with FTDI FT232RL](https://www.deshide.com/product-details_SH-U09C2.html)
 - macOS using the AVFoundation capture backend
 
 Similar ATmega32U4 boards, capture cards, USB-to-UART adapters, operating
@@ -62,9 +62,9 @@ coordinates.
 
 - Nintendo Switch 2 and a dock or other compatible HDMI output method
 - HDMI cable
-- UGREEN HDMI capture card or a similar UVC-compatible capture device
-- Arduino Pro Micro, 5 V/16 MHz, ATmega32U4
-- USB-to-UART adapter compatible with the Pro Micro logic voltage
+- [UGREEN 25854/CM716 capture card](https://www.ugreenindia.com/products/ugreen-full-hd-1080p-video-capture-card-4k-hdmi-to-usb-a-c-hdmi-capture-card-usb-2-0capture-video-audio-recording-compatible-with-switch-ps5-xbox-ipados-macbook-incompatible-with-dvd-player-firestick-25854), or a similar UVC-compatible capture device
+- [USB-C Pro Micro, 5 V/16 MHz, ATmega32U4](https://paradisetronic.com/products/pro-micro-modul-mit-usb-c-atmega32u4-5v-16mhz-arduino-kompatibel)
+- [DSD TECH SH-U09C2 FT232RL USB-to-TTL adapter](https://www.deshide.com/product-details_SH-U09C2.html), or a compatible USB-to-UART adapter
 - Jumper wires for UART and ground
 - USB cables/adapters for the capture card, USB-to-UART adapter, and Pro Micro
 - A computer; this repository has only been tested on macOS
@@ -77,7 +77,8 @@ Wire the serial connection as follows:
 | RX | TX / TXO / pin 1 |
 | GND | GND |
 
-TX and RX are crossed. Do not connect the adapter VCC pin when the Pro Micro is
+TX and RX are crossed. Set the SH-U09C2 logic-level jumper to 5 V for the
+tested 5 V Pro Micro. Do not connect the adapter VCC pin when the Pro Micro is
 already powered over USB unless you know that your particular boards require
 it. Both devices must share ground.
 
