@@ -4,3 +4,5 @@ switch-automation-tools/
 SwitchInputEmulator/
 venv/
 .DS_Store
+.env
+.env.local

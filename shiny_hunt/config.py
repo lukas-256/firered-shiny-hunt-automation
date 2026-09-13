@@ -1,13 +1,19 @@
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from typing import Optional
 
 import cv2
 
 
+def _environment_int(name: str, default: int) -> int:
+    value = os.environ.get(name)
+    return int(value) if value else default
+
+
 @dataclass(frozen=True)
 class CaptureConfig:
-    device_index: int = 0
+    device_index: int = _environment_int("SHINY_HUNT_CAPTURE_DEVICE", 0)
     backend: int = cv2.CAP_AVFOUNDATION
     width: int = 1920
     height: int = 1080
@@ -31,15 +37,15 @@ class RuntimeConfig:
     shiny_no_match_streak_threshold: int = 40
     shiny_no_match_notify_runtime_states: tuple[str, ...] = ("s1",)
     reset_on_no_match_threshold_outside_notify_states: bool = False
-    ntfy_topic: str = "shiny_hunt_noti_ignotus"
-    reset_counter_initial: int = 0
+    ntfy_topic: str = os.environ.get("SHINY_HUNT_NTFY_TOPIC", "")
+    reset_counter_initial: int = _environment_int("SHINY_HUNT_RESET_COUNTER_INITIAL", 0)
     reset_counter_increment: int = 1
     success_probability_per_try: float = 1.0 / 8192.0
 
 
 @dataclass(frozen=True)
 class ControllerConfig:
-    port: str = "/dev/cu.usbserial-BG03S8AW"
+    port: str = os.environ.get("SHINY_HUNT_SERIAL_PORT", "")
     baud_rate: int = 19200
     timeout: float = 0.2
     connect_delay_seconds: float = 1.0
@@ -50,7 +56,7 @@ class ControllerConfig:
 @dataclass(frozen=True)
 class AppConfig:
     project_root: Path
-    state_profile: str = "eevee"
+    state_profile: str = os.environ.get("SHINY_HUNT_PROFILE", "snorlax")
     initial_runtime_state: str = "s0"
     capture: CaptureConfig = CaptureConfig()
     match: MatchConfig = MatchConfig()

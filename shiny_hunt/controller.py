@@ -77,6 +77,12 @@ class ProMicroController:
         self._serial: Optional[serial.Serial] = None
 
     def connect(self) -> None:
+        if not self.port:
+            raise RuntimeError(
+                "Controller serial port is not configured. "
+                "Set the SHINY_HUNT_SERIAL_PORT environment variable."
+            )
+
         if self._serial is not None and self._serial.is_open:
             self._serial.close()
 
