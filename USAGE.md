@@ -92,8 +92,8 @@ Python 3.9.1 and the versions in `requirements.txt` were used for the tested
 setup. Newer Python 3 versions may also work.
 
 ```bash
-git clone <your-repository-url> ShinyHunting
-cd ShinyHunting
+git clone https://github.com/lukas-256/firered-shiny-hunt-automation.git
+cd firered-shiny-hunt-automation
 python3 -m venv venv
 source venv/bin/activate
 python3 -m pip install --upgrade pip
